@@ -1,8 +1,8 @@
 # 100 Python Programming Questions
 
-Each question links to its editable Python solution file. Solutions are
-committed and pushed automatically by the VS Code watcher after a saved file
-has been unchanged for three seconds.
+Each question links to its editable Python solution file. Git-visible project
+changes are committed and pushed automatically by the VS Code watcher after
+the project has been unchanged for five seconds, with checks once a minute.
 
 | # | Question | Prompt | Solution |
 |---:|---|---|---|

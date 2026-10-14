@@ -6,8 +6,8 @@ import time
 
 
 ROOT = Path(__file__).resolve().parent
-WATCH_POLL_SECONDS = 1
-SAVE_QUIET_SECONDS = 3
+WATCH_POLL_SECONDS = 60
+SAVE_QUIET_SECONDS = 5
 PUSH_RETRY_SECONDS = 60
 
 
@@ -28,7 +28,7 @@ def run_git(*args: str, capture_output: bool = False) -> str:
     return result.stdout.strip() if capture_output else ""
 
 
-def publish_solutions() -> int:
+def publish_project_changes() -> int:
     try:
         git_root = Path(run_git("rev-parse", "--show-toplevel", capture_output=True))
         if git_root.resolve() != ROOT:
@@ -65,19 +65,16 @@ def publish_solutions() -> int:
             )
             return 1
 
-        run_git("add", "-A", "--", "solutions")
+        run_git("add", "-A")
         changed_files = run_git(
             "diff", "--cached", "--name-only", capture_output=True
         ).splitlines()
         message = ""
         if changed_files:
-            if len(changed_files) == 1:
-                message = f"Completed solution: {Path(changed_files[0]).name}"
-            else:
-                message = f"Updated solutions ({len(changed_files)} files)"
+            message = f"Auto-publish project updates ({len(changed_files)} files)"
             run_git("commit", "-m", message)
         else:
-            print("No solution changes to commit.")
+            print("No project changes to commit.")
 
         try:
             run_git("push", "origin", "main")
@@ -101,8 +98,8 @@ def publish_solutions() -> int:
 
 def watch_solutions() -> int:
     print(
-        "Watching solutions/ for saved changes. "
-        "Stable saves are committed and pushed automatically.",
+        "Watching the project for changes every 60 seconds. "
+        "Stable changes are committed and pushed automatically.",
         flush=True,
     )
     last_status = ""
@@ -117,8 +114,6 @@ def watch_solutions() -> int:
                     "status",
                     "--porcelain=v1",
                     "--untracked-files=all",
-                    "--",
-                    "solutions",
                     capture_output=True,
                 )
             except RuntimeError as error:
@@ -134,14 +129,14 @@ def watch_solutions() -> int:
 
             if status and status != handled_status:
                 if now - stable_since >= SAVE_QUIET_SECONDS:
-                    print("Solution changes are stable; publishing.", flush=True)
-                    publish_solutions()
+                    print("Project changes are stable; publishing.", flush=True)
+                    publish_project_changes()
                     handled_status = status
                     next_retry = time.monotonic() + PUSH_RETRY_SECONDS
 
             if now >= next_retry:
                 if not status or status == handled_status:
-                    publish_solutions()
+                    publish_project_changes()
                     next_retry = time.monotonic() + PUSH_RETRY_SECONDS
 
             time.sleep(WATCH_POLL_SECONDS)
@@ -152,17 +147,17 @@ def watch_solutions() -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Commit and push solution files, or watch them for saved changes."
+        description="Commit and push project files, or watch for saved changes."
     )
     parser.add_argument(
         "--watch",
         action="store_true",
-        help="watch solutions/ and publish stable saves automatically",
+        help="watch the whole project and publish stable changes automatically",
     )
     args = parser.parse_args()
     if args.watch:
         return watch_solutions()
-    return publish_solutions()
+    return publish_project_changes()
 
 
 if __name__ == "__main__":
