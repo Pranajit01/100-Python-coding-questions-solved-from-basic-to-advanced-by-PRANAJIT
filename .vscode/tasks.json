@@ -12,19 +12,6 @@
       "isBackground": true,
       "runOptions": {
         "runOn": "folderOpen"
-      },
-      "problemMatcher": {
-        "pattern": [
-          {
-            "regexp": "^(.*)$",
-            "message": 1
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Watching solutions/",
-          "endsPattern": "Stopped watching solutions/"
-        }
       }
     }
   ]
