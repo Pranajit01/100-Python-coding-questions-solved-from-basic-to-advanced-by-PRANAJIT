@@ -4,14 +4,17 @@ Write a program to read two numbers and print their sum, difference, product and
 """
 
 # Write your solution below.
-first_number = float(input("Enter the first number: "))
-second_number = float(input("Enter the second number: "))
+# Program to perform arithmetic operations on two numbers
 
-print(f"Sum: {first_number + second_number}")
-print(f"Difference: {first_number - second_number}")
-print(f"Product: {first_number * second_number}")
+num1 = float(input("Enter the first number: "))
+num2 = float(input("Enter the second number: "))
 
-if second_number == 0:
-    print("Quotient: undefined (cannot divide by zero)")
+# Arithmetic operations
+print("Sum:", num1 + num2)
+print("Difference:", num1 - num2)
+print("Product:", num1 * num2)
+
+if num2 != 0:
+    print("Quotient:", num1 / num2)
 else:
-    print(f"Quotient: {first_number / second_number}")
+    print("Quotient: Cannot divide by zero")
