@@ -4,4 +4,9 @@ Write a program to read two numbers and print their sum, difference, product and
 """
 
 # Write your solution below.
-a=
+a=5
+b=3
+sum=a+b
+diff=a-b
+product=a*b
+qui
