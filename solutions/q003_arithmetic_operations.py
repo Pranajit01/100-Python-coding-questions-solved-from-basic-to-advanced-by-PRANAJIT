@@ -13,6 +13,6 @@ quotient=a/b
 print("the result of two numbers arithmetic operators.,"/n
       "sum of two number =",sum,/n
       "diffrence of of two number =",diff,/n
-      
+      "pro"
       
       )
