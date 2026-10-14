@@ -1,5 +1,7 @@
 import argparse
+import ast
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -9,6 +11,134 @@ ROOT = Path(__file__).resolve().parent
 WATCH_POLL_SECONDS = 60
 SAVE_QUIET_SECONDS = 5
 PUSH_RETRY_SECONDS = 60
+
+
+def has_implementation(statement: ast.stmt) -> bool:
+    if isinstance(statement, ast.Pass):
+        return False
+    if (
+        isinstance(statement, ast.Expr)
+        and isinstance(statement.value, ast.Constant)
+        and isinstance(statement.value.value, str)
+    ):
+        return False
+
+    suites = [
+        child
+        for attribute in ("body", "orelse", "finalbody")
+        for child in getattr(statement, attribute, [])
+        if isinstance(child, ast.stmt)
+    ]
+    if isinstance(statement, (ast.Try, ast.TryStar)):
+        suites.extend(
+            child
+            for handler in statement.handlers
+            for child in handler.body
+            if isinstance(child, ast.stmt)
+        )
+    if suites:
+        return any(has_implementation(child) for child in suites)
+    return True
+
+
+def completed_solutions() -> tuple[list[tuple[int, Path, str]], list[str]]:
+    completed = []
+    invalid_files = []
+    solution_files = sorted(
+        ROOT.glob("solutions/q[0-9][0-9][0-9]_*.py"),
+        key=lambda path: int(path.stem[1:4]),
+    )
+    for path in solution_files:
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        except SyntaxError:
+            invalid_files.append(path.name)
+            continue
+
+        docstring = ast.get_docstring(tree) or ""
+        title_match = (
+            re.match(r"Question \d+:\s*(.+)", docstring.splitlines()[0])
+            if docstring
+            else None
+        )
+        title = title_match.group(1) if title_match else path.stem
+        if any(has_implementation(statement) for statement in tree.body):
+            number = int(path.stem[1:4])
+            completed.append((number, path, title))
+    return completed, invalid_files
+
+
+def update_progress_readme() -> None:
+    completed, invalid_files = completed_solutions()
+    solution_files = sorted(
+        ROOT.glob("solutions/q[0-9][0-9][0-9]_*.py"),
+        key=lambda path: int(path.stem[1:4]),
+    )
+    completed_numbers = {number for number, _, _ in completed}
+    next_solution = next(
+        (
+            path
+            for path in solution_files
+            if int(path.stem[1:4]) not in completed_numbers
+        ),
+        None,
+    )
+
+    progress_rows = [
+        "| Milestone | Status |",
+        "|---|---:|",
+        f"| Questions organized and linked to solution files | {len(solution_files)} / 100 |",
+        f"| Solutions containing executable code | {len(completed)} / {len(solution_files)} |",
+    ]
+    if next_solution is None:
+        progress_rows.append("| Next exercise | All listed exercises have code |")
+    else:
+        next_number = int(next_solution.stem[1:4])
+        next_tree = ast.parse(next_solution.read_text(encoding="utf-8"))
+        next_docstring = ast.get_docstring(next_tree) or ""
+        next_title_match = (
+            re.match(r"Question \d+:\s*(.+)", next_docstring.splitlines()[0])
+            if next_docstring
+            else None
+        )
+        next_title = (
+            next_title_match.group(1) if next_title_match else next_solution.stem
+        )
+        progress_rows.append(
+            f"| Next exercise | [Question {next_number} — {next_title}]"
+            f"(solutions/{next_solution.name}) |"
+        )
+
+    readme_path = ROOT / "README.md"
+    readme = readme_path.read_text(encoding="utf-8")
+    section = "\n".join(
+        [
+            "<!-- AUTO_PROGRESS_START -->",
+            *progress_rows,
+            "<!-- AUTO_PROGRESS_END -->",
+        ]
+    )
+    updated_readme, replacements = re.subn(
+        r"<!-- AUTO_PROGRESS_START -->.*?<!-- AUTO_PROGRESS_END -->",
+        lambda _: section,
+        readme,
+        count=1,
+        flags=re.DOTALL,
+    )
+    if replacements != 1:
+        raise RuntimeError("README.md is missing the automatic progress markers.")
+    if updated_readme != readme:
+        readme_path.write_text(updated_readme, encoding="utf-8")
+        print(
+            f"Updated README progress: {len(completed)} of "
+            f"{len(solution_files)} solution files contain executable code."
+        )
+    if invalid_files:
+        print(
+            "Not counted due to Python syntax errors: "
+            + ", ".join(invalid_files),
+            file=sys.stderr,
+        )
 
 
 def run_git(*args: str, capture_output: bool = False) -> str:
@@ -65,6 +195,7 @@ def publish_project_changes() -> int:
             )
             return 1
 
+        update_progress_readme()
         run_git("add", "-A")
         changed_files = run_git(
             "diff", "--cached", "--name-only", capture_output=True

@@ -17,17 +17,22 @@ starting with input, output, and basic arithmetic and progressing to strings,
 lists, number problems, and small menu-driven programs.
 
 I use each prompt to practise breaking a problem into steps, implementing a
-solution in Python, and refining it as I learn. The collection is a
-work in progress: **5 of 100 solutions are currently complete**; the remaining
-files are ready for me to work through.
+solution in Python, and refining it as I learn. Progress below is refreshed
+automatically from the numbered solution files; the code-presence count does
+not assess correctness.
 
 ## Progress
 
 | Milestone | Status |
 |---|---:|
 | Questions organized and linked to solution files | 100 / 100 |
-| Python solutions completed | 5 / 100 |
+<!-- AUTO_PROGRESS_START -->
+| Milestone | Status |
+|---|---:|
+| Questions organized and linked to solution files | 100 / 100 |
+| Solutions containing executable code | 5 / 100 |
 | Next exercise | [Question 6 — Swap Using a Third Variable](solutions/q006_swap_using_third_variable.py) |
+<!-- AUTO_PROGRESS_END -->
 
 ## Browse the work
 
