@@ -4,16 +4,14 @@ Write a program to read two numbers and print their sum, difference, product and
 """
 
 # Write your solution below.
-a=5
-b=3
-sum=a+b
-diff=a-b
-product=a*b
-quotient=a/b
-print(
-    "the result of two numbers arithmetic operators.,"/n
-      "sum of the two number =",sum,/n
-      "diffrence of the two number =",diff,/n
-      "product of the two numbers = ",product,/n 
-      "quotient of the two numbers = ",quotient,'end,
-       )
+first_number = float(input("Enter the first number: "))
+second_number = float(input("Enter the second number: "))
+
+print(f"Sum: {first_number + second_number}")
+print(f"Difference: {first_number - second_number}")
+print(f"Product: {first_number * second_number}")
+
+if second_number == 0:
+    print("Quotient: undefined (cannot divide by zero)")
+else:
+    print(f"Quotient: {first_number / second_number}")
