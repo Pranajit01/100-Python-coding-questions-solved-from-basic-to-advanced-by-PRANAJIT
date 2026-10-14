@@ -10,10 +10,10 @@ sum=a+b
 diff=a-b
 product=a*b
 quotient=a/b
-print("the result of two numbers arithmetic operators.,"/n
+print(
+    "the result of two numbers arithmetic operators.,"/n
       "sum of the two number =",sum,/n
       "diffrence of the two number =",diff,/n
       "product of the two numbers = ",product,/n 
-      "quotient of the two number"
-      
-      )
+      "quotient of the two numbers = ",quotient,'end,
+       )
