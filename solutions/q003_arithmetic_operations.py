@@ -11,8 +11,8 @@ diff=a-b
 product=a*b
 quotient=a/b
 print("the result of two numbers arithmetic operators.,"/n
-      "sum of two number =",sum,/n
+      "sum of the two number =",sum,/n
       "diffrence of the two number =",diff,/n
-      "product of "
+      "product of the "
       
       )
