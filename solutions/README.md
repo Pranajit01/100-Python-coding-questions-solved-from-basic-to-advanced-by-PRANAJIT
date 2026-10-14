@@ -1,8 +1,8 @@
 # Python Solutions
 
 Each question has a starter Python file below. Open the file, write your
-answer under the prompt, and save it. The VS Code watcher publishes saved
-solution changes automatically.
+answer under the prompt, and save it. The VS Code watcher checks the whole
+project once a minute and publishes stable, Git-visible changes automatically.
 
 | # | Question | Python solution |
 |---:|---|---|
