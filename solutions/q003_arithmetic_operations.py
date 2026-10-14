@@ -9,4 +9,4 @@ b=3
 sum=a+b
 diff=a-b
 product=a*b
-quotient=
+quotient=a/b
