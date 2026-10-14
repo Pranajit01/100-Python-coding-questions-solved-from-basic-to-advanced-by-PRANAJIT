@@ -1,9 +1,14 @@
+import argparse
 from pathlib import Path
 import subprocess
 import sys
+import time
 
 
 ROOT = Path(__file__).resolve().parent
+WATCH_POLL_SECONDS = 1
+SAVE_QUIET_SECONDS = 3
+PUSH_RETRY_SECONDS = 60
 
 
 def run_git(*args: str, capture_output: bool = False) -> str:
@@ -23,7 +28,7 @@ def run_git(*args: str, capture_output: bool = False) -> str:
     return result.stdout.strip() if capture_output else ""
 
 
-def main() -> int:
+def publish_solutions() -> int:
     try:
         git_root = Path(run_git("rev-parse", "--show-toplevel", capture_output=True))
         if git_root.resolve() != ROOT:
@@ -64,21 +69,21 @@ def main() -> int:
         changed_files = run_git(
             "diff", "--cached", "--name-only", capture_output=True
         ).splitlines()
-        if not changed_files:
-            print("No solution changes to commit.")
-            return 0
-
-        if len(changed_files) == 1:
-            message = f"Completed solution: {Path(changed_files[0]).name}"
+        message = ""
+        if changed_files:
+            if len(changed_files) == 1:
+                message = f"Completed solution: {Path(changed_files[0]).name}"
+            else:
+                message = f"Updated solutions ({len(changed_files)} files)"
+            run_git("commit", "-m", message)
         else:
-            message = f"Updated solutions ({len(changed_files)} files)"
+            print("No solution changes to commit.")
 
-        run_git("commit", "-m", message)
         try:
             run_git("push", "origin", "main")
         except RuntimeError as error:
             print(
-                f"{error}\nThe commit is saved locally; push it with "
+                f"{error}\nAny commit is saved locally; push it with "
                 "'git push origin main' after resolving the issue.",
                 file=sys.stderr,
             )
@@ -87,8 +92,77 @@ def main() -> int:
         print(error, file=sys.stderr)
         return 1
 
-    print(f"Committed and pushed: {message}")
+    if message:
+        print(f"Committed and pushed: {message}")
+    else:
+        print("Pushed any pending commits.")
     return 0
+
+
+def watch_solutions() -> int:
+    print(
+        "Watching solutions/ for saved changes. "
+        "Stable saves are committed and pushed automatically.",
+        flush=True,
+    )
+    last_status = ""
+    stable_since = time.monotonic()
+    handled_status = ""
+    next_retry = 0.0
+
+    try:
+        while True:
+            try:
+                status = run_git(
+                    "status",
+                    "--porcelain=v1",
+                    "--untracked-files=all",
+                    "--",
+                    "solutions",
+                    capture_output=True,
+                )
+            except RuntimeError as error:
+                print(error, file=sys.stderr, flush=True)
+                time.sleep(WATCH_POLL_SECONDS)
+                continue
+
+            now = time.monotonic()
+            if status != last_status:
+                last_status = status
+                stable_since = now
+                handled_status = ""
+
+            if status and status != handled_status:
+                if now - stable_since >= SAVE_QUIET_SECONDS:
+                    print("Solution changes are stable; publishing.", flush=True)
+                    publish_solutions()
+                    handled_status = status
+                    next_retry = time.monotonic() + PUSH_RETRY_SECONDS
+
+            if now >= next_retry:
+                if not status or status == handled_status:
+                    publish_solutions()
+                    next_retry = time.monotonic() + PUSH_RETRY_SECONDS
+
+            time.sleep(WATCH_POLL_SECONDS)
+    except KeyboardInterrupt:
+        print("\nStopped watching solutions/.", flush=True)
+        return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Commit and push solution files, or watch them for saved changes."
+    )
+    parser.add_argument(
+        "--watch",
+        action="store_true",
+        help="watch solutions/ and publish stable saves automatically",
+    )
+    args = parser.parse_args()
+    if args.watch:
+        return watch_solutions()
+    return publish_solutions()
 
 
 if __name__ == "__main__":
