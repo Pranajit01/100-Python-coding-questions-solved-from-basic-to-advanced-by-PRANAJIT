@@ -18,7 +18,7 @@ lists, number problems, and small menu-driven programs.
 
 I use each prompt to practise breaking a problem into steps, implementing a
 solution in Python, and refining it as I learn. The collection is a
-work in progress: **1 of 100 solutions is currently complete**; the remaining
+work in progress: **5 of 100 solutions are currently complete**; the remaining
 files are ready for me to work through.
 
 ## Progress
@@ -26,8 +26,8 @@ files are ready for me to work through.
 | Milestone | Status |
 |---|---:|
 | Questions organized and linked to solution files | 100 / 100 |
-| Python solutions completed | 1 / 100 |
-| Next exercise | [Question 2 — Sum of Two Numbers](solutions/q002_sum_of_two_numbers.py) |
+| Python solutions completed | 5 / 100 |
+| Next exercise | [Question 6 — Swap Using a Third Variable](solutions/q006_swap_using_third_variable.py) |
 
 ## Browse the work
 
