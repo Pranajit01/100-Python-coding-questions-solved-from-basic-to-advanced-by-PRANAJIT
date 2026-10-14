@@ -10,4 +10,5 @@ sum=a+b
 diff=a-b
 product=a*b
 quotient=a/b
-print("the result of two numbers arithmetic operators")
+print("the result of two numbers arithmetic operators."
+      )
