@@ -3,14 +3,17 @@
 Write a program to read two numbers and print their sum, difference, product and quotient.
 """
 
-# Read the two numbers from standard input.
-a = float(input())
-b = float(input())
-
-print("Sum:", a + b)
-print("Difference:", a - b)
-print("Product:", a * b)
-if b == 0:
-  print("Quotient: undefined (division by zero)")
-else:
-  print("Quotient:", a / b)
+# Write your solution below.
+a=5
+b=3
+sum=a+b
+diff=a-b
+product=a*b
+quotient=a/b
+print(
+    "the result of two numbers arithmetic operators.,"/n
+      "sum of the two number =",sum,/n
+      "diffrence of the two number =",diff,/n
+      "product of the two numbers = ",product,/n 
+      "quotient of the two numbers = ",quotient,'end,
+       )
