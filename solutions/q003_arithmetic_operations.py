@@ -5,7 +5,6 @@ Write a program to read two numbers and print their sum, difference, product and
 
 # Write your solution below.
 # Program to perform arithmetic operations on two numbers
-
 num1 = float(input("Enter the first number: "))
 num2 = float(input("Enter the second number: "))
 
