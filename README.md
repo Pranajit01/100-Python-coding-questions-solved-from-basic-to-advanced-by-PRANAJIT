@@ -30,8 +30,8 @@ not assess correctness.
 | Milestone | Status |
 |---|---:|
 | Questions organized and linked to solution files | 100 / 100 |
-| Solutions containing executable code | 5 / 100 |
-| Next exercise | [Question 6 — Swap Using a Third Variable](solutions/q006_swap_using_third_variable.py) |
+| Solutions containing executable code | 10 / 100 |
+| Next exercise | [Question 11 — Even or Odd](solutions/q011_even_or_odd.py) |
 <!-- AUTO_PROGRESS_END -->
 
 ## Browse the work
