@@ -6,4 +6,5 @@ Write a program to read seconds and convert them into hours, minutes and seconds
 # Write your solution below.
 sec = int(input("Enter the second: "))
 hour = sec // 3600
-min = (sec )
+min = (sec // 3600) % 60
+second
