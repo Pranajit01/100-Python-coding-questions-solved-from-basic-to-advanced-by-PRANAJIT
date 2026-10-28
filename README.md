@@ -30,8 +30,8 @@ not assess correctness.
 | Milestone | Status |
 |---|---:|
 | Questions organized and linked to solution files | 100 / 100 |
-| Solutions containing executable code | 10 / 100 |
-| Next exercise | [Question 11 — Even or Odd](solutions/q011_even_or_odd.py) |
+| Solutions containing executable code | 12 / 100 |
+| Next exercise | [Question 13 — Largest of Three Numbers](solutions/q013_largest_of_three.py) |
 <!-- AUTO_PROGRESS_END -->
 
 ## Browse the work
